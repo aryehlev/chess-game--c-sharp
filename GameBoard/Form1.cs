@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,30 +14,145 @@ namespace GameBoard
 {
     public partial class Form1 : Form
     {
-        private bool m_IsFirstTimeUp;
 
         public Form1()
         {
             InitializeComponent();
+            SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            this.castle.MouseDown += key_MouseDown;
+            this.castle.MouseMove += key_MouseMove;
+            this.castle.MouseUp += key_MouseUp;
+            putInFirstLocation(castle);
+            this.m_LastLocation = this.castle.Location;
+           
         }
 
-        private Point MouseDownLocation;
-
-
-        private void transparentControl1_MouseDown(object sender, MouseEventArgs e)
+        private void putInFirstLocation(PictureBox castle)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            castle.Location = new Point(roundToNearest100(12) + XPointDeviation, roundToNearest100(12)+ YPointDeviation);
+            changeColor(castle);
+        }
+
+        private void key_MouseUp(object i_Sender, MouseEventArgs i_E)
+        {
+
+            PictureBox pb = (PictureBox)i_Sender;
+            pb.BackColor = pb.Parent.BackColor;
+
+            putInNextLocation(pb);
+           
+            changeColor(pb);
+        }
+
+        private void changeColor(PictureBox i_PictureBox)
+        {
+            if ((roundToNearest100(i_PictureBox.Location.X) / 100) % 2 == (roundToNearest100(i_PictureBox.Location.Y) / 100) % 2)
             {
-                MouseDownLocation = e.Location;
+                i_PictureBox.BackColor = Color.FromArgb(192, 192, 0);
+            }
+            else
+            {
+                i_PictureBox.BackColor = i_PictureBox.Parent.BackColor;
             }
         }
 
-        private void transparentControl1_MouseMove(object sender, MouseEventArgs e)
+        private readonly object m_LockForLastLocation = new object();
+        private Point m_StartPointFOrMouseMove;
+        private Point m_LastLocation;
+        private const int XPointDeviation = 20;
+        private const int YPointDeviation = 12;
+
+        private int roundToNearest100(int i_Num)
+        {
+            if(i_Num < 100)
+            {
+                if(i_Num >= 50)
+                {
+                    return 100;
+                }
+
+                if(i_Num < 50 && i_Num >= 0)
+                {
+                    return 0;
+                }
+            }
+
+            if(i_Num >= 800 || i_Num < 0)
+            {
+                return -1;
+            }
+            string strToConvert = i_Num.ToString();
+            if(strToConvert[1] >= '5' && strToConvert[0] <'7')
+            {
+                strToConvert = $"{char.GetNumericValue(strToConvert[0]) + 1}00";
+            }
+            else
+            {
+                strToConvert = $"{strToConvert[0]}00";
+            }
+
+            return int.Parse(strToConvert);
+
+        }
+
+        private void nextMove(PictureBox piece)
+        {
+            
+        }
+
+        private void putInNextLocation(PictureBox pb)
+        {
+            Point p = pb.Location;
+            int X = roundToNearest100(p.X);
+            int Y = roundToNearest100(p.Y);
+            bool isOkPlace = false;
+
+            switch (pb.Name)
+            {
+                case "castle":
+                    isOkPlace = inLine(pb);
+                    break;
+            }
+
+            lock(m_LockForLastLocation)
+            {
+                if(Y != -1 && X != -1 && isOkPlace)
+                {
+                    pb.Location = new Point(X + XPointDeviation, Y + YPointDeviation);
+                    m_LastLocation = pb.Location;
+
+                }
+                else
+                {
+                    pb.Location = m_LastLocation;
+                }
+            }
+        }
+
+            
+        private bool inLine(PictureBox pb)
+        {
+            return Math.Abs(pb.Location.X - m_LastLocation.X)  <= 20 ^ Math.Abs(pb.Location.Y  - m_LastLocation.Y) <= 20;
+        }
+
+        private void key_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                transparentControl1.Left = e.X + transparentControl1.Left - MouseDownLocation.X;
-                transparentControl1.Top = e.Y + transparentControl1.Top - MouseDownLocation.Y;
+                m_StartPointFOrMouseMove = new Point(e.X, e.Y);
+            }
+        }
+
+        private void key_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                PictureBox pb = (PictureBox)sender;
+                Point pt = pb.Location;
+                pt.Offset(e.X - m_StartPointFOrMouseMove.X, e.Y - m_StartPointFOrMouseMove.Y);
+                pb.Location = pt;
+               
+
             }
         }
 
@@ -61,6 +178,16 @@ namespace GameBoard
                    
                     BackgroundImage = bm;
                 }
+        }
+
+        private void Form1_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void transparentControl2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

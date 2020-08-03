@@ -16,10 +16,11 @@ namespace GameBoard
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            
-            //form1.Load += form1.Form1_Load;
-            Application.Run(new Form1());
-           
+            Form1 form1 = new Form1();
+            form1.Load += form1.Form1_Load;
+            form1.ShowDialog();
+
+
         }
 
     }

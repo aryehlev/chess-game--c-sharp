@@ -14,23 +14,32 @@ namespace GameBoard
 {
     public partial class Form1 : Form
     {
+        private bool[,] m_placesTaken;
 
         public Form1()
         {
             InitializeComponent();
+            m_placesTaken = new bool[8,8];
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-            this.castle.MouseDown += key_MouseDown;
-            this.castle.MouseMove += key_MouseMove;
-            this.castle.MouseUp += key_MouseUp;
-            putInFirstLocation(castle);
-            this.m_LastLocation = this.castle.Location;
-           
+            this.leftBlackCastle.MouseDown += key_MouseDown;
+            this.leftBlackCastle.MouseMove += key_MouseMove;
+            this.leftBlackCastle.MouseUp += key_MouseUp;
+            this.rightBlackCastle.MouseDown += key_MouseDown;
+            this.rightBlackCastle.MouseMove += key_MouseMove;
+            this.rightBlackCastle.MouseUp += key_MouseUp;
+            putInFirstLocation(leftBlackCastle);
+            putInFirstLocation(rightBlackCastle);
+            this.m_LastLocationOfLeftBlack = this.leftBlackCastle.Location;
+            this.m_LastLocationOfRightBlack = this.rightBlackCastle.Location;
+
         }
 
-        private void putInFirstLocation(PictureBox castle)
+        private void putInFirstLocation(PictureBox i_Peice)
         {
-            castle.Location = new Point(roundToNearest100(12) + XPointDeviation, roundToNearest100(12)+ YPointDeviation);
-            changeColor(castle);
+            m_placesTaken[i_Peice.Location.X / 100, i_Peice.Location.Y / 100] = true;
+            i_Peice.Location = new Point(roundToNearest100(i_Peice.Location.X) + XPointDeviation, roundToNearest100(i_Peice.Location.Y) + YPointDeviation);
+            //changeColor(i_Peice);
+            i_Peice.BackColor = Color.Transparent;
         }
 
         private void key_MouseUp(object i_Sender, MouseEventArgs i_E)
@@ -40,25 +49,26 @@ namespace GameBoard
             pb.BackColor = pb.Parent.BackColor;
 
             putInNextLocation(pb);
-           
-            changeColor(pb);
+            pb.BackColor = Color.Transparent;
+           // changeColor(pb);
         }
 
-        private void changeColor(PictureBox i_PictureBox)
-        {
-            if ((roundToNearest100(i_PictureBox.Location.X) / 100) % 2 == (roundToNearest100(i_PictureBox.Location.Y) / 100) % 2)
-            {
-                i_PictureBox.BackColor = Color.FromArgb(192, 192, 0);
-            }
-            else
-            {
-                i_PictureBox.BackColor = i_PictureBox.Parent.BackColor;
-            }
-        }
+        //private void changeColor(PictureBox i_PictureBox)
+        //{
+        //    if ((roundToNearest100(i_PictureBox.Location.X) / 100) % 2 == (roundToNearest100(i_PictureBox.Location.Y) / 100) % 2)
+        //    {
+        //        i_PictureBox.BackColor = Color.FromArgb(192, 192, 0);
+        //    }
+        //    else
+        //    {
+        //        i_PictureBox.BackColor = i_PictureBox.Parent.BackColor;
+        //    }
+        //}
 
         private readonly object m_LockForLastLocation = new object();
         private Point m_StartPointFOrMouseMove;
-        private Point m_LastLocation;
+        private Point m_LastLocationOfLeftBlack;
+        private Point m_LastLocationOfRightBlack;
         private const int XPointDeviation = 20;
         private const int YPointDeviation = 12;
 
@@ -82,7 +92,7 @@ namespace GameBoard
                 return -1;
             }
             string strToConvert = i_Num.ToString();
-            if(strToConvert[1] >= '5' && strToConvert[0] <'7')
+            if(strToConvert[1] > '6' && strToConvert[0] <'7')
             {
                 strToConvert = $"{char.GetNumericValue(strToConvert[0]) + 1}00";
             }
@@ -107,32 +117,64 @@ namespace GameBoard
             int Y = roundToNearest100(p.Y);
             bool isOkPlace = false;
 
-            switch (pb.Name)
+            switch(pb.Name)
             {
-                case "castle":
+                case "leftBlackCastle":
+                case "rightBlackCastle":
                     isOkPlace = inLine(pb);
                     break;
             }
 
+
             lock(m_LockForLastLocation)
             {
-                if(Y != -1 && X != -1 && isOkPlace)
+                if(Y != -1 && X != -1 && isOkPlace && !m_placesTaken[X / 100, Y / 100])
                 {
                     pb.Location = new Point(X + XPointDeviation, Y + YPointDeviation);
-                    m_LastLocation = pb.Location;
+                    switch (pb.Name)
+                    {
+                        case "leftBlackCastle":
+                            m_placesTaken[m_LastLocationOfLeftBlack.X / 100, m_LastLocationOfLeftBlack.Y / 100] = false;
+                             m_LastLocationOfLeftBlack = pb.Location;
+                            break;
+                        case "rightBlackCastle":
+                            m_placesTaken[m_LastLocationOfRightBlack.X / 100, m_LastLocationOfRightBlack.Y / 100] = false;
+                            m_LastLocationOfRightBlack = pb.Location;
+                            break;
 
+                    }
+                    m_placesTaken[X / 100, Y / 100] = true;
+                    
                 }
                 else
                 {
-                    pb.Location = m_LastLocation;
+                    switch(pb.Name)
+                    {
+                        case "leftBlackCastle":
+                            pb.Location = m_LastLocationOfLeftBlack;
+                            break;
+                        case "rightBlackCastle":
+                            pb.Location = m_LastLocationOfRightBlack;
+                            break;
+
+                    }
                 }
             }
         }
 
-            
+
         private bool inLine(PictureBox pb)
         {
-            return Math.Abs(pb.Location.X - m_LastLocation.X)  <= 20 ^ Math.Abs(pb.Location.Y  - m_LastLocation.Y) <= 20;
+            switch (pb.Name)
+            {
+                case "leftBlackCastle":
+                    return Math.Abs(pb.Location.X - m_LastLocationOfLeftBlack.X) <= 20 ^ Math.Abs(pb.Location.Y - m_LastLocationOfLeftBlack.Y) <= 20;
+                    
+               default:
+                    return Math.Abs(pb.Location.X - m_LastLocationOfRightBlack.X) <= 20 ^ Math.Abs(pb.Location.Y - m_LastLocationOfRightBlack.Y) <= 20;
+
+            }
+           
         }
 
         private void key_MouseDown(object sender, MouseEventArgs e)
@@ -161,7 +203,7 @@ namespace GameBoard
            
                 Bitmap bm = new Bitmap(800, 800);
                 using(Graphics g = Graphics.FromImage(bm))
-                using(SolidBrush lightBrush = new SolidBrush(Color.Wheat))
+                //using(SolidBrush lightBrush = new SolidBrush(Color.Wheat))
                 using(SolidBrush darkBrush = new SolidBrush(Color.Peru))
                 {
                     for(int i = 0; i < 8; i++)
@@ -170,8 +212,8 @@ namespace GameBoard
                         {
                             if((j % 2 == 0 && i % 2 == 0) || (j % 2 != 0 && i % 2 != 0))
                                 g.FillRectangle(darkBrush, i * 100, j * 100, 100, 100);
-                            else if((j % 2 == 0 && i % 2 != 0) || (j % 2 != 0 && i % 2 == 0))
-                                g.FillRectangle(lightBrush, i * 100, j * 100, 100, 100);
+                            //else if((j % 2 == 0 && i % 2 != 0) || (j % 2 != 0 && i % 2 == 0))
+                            //    g.FillRectangle(lightBrush, i * 100, j * 100, 100, 100);
                         }
                     }
 

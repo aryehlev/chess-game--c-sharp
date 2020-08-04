@@ -1,0 +1,10 @@
+C:\Users\97254\source\repos\chess-game--c-sharp\GameBoard\bin\Debug\GameBoard.exe.config
+C:\Users\97254\source\repos\chess-game--c-sharp\GameBoard\bin\Debug\GameBoard.exe
+C:\Users\97254\source\repos\chess-game--c-sharp\GameBoard\bin\Debug\GameBoard.pdb
+C:\Users\97254\source\repos\chess-game--c-sharp\GameBoard\obj\Debug\UI.csprojAssemblyReference.cache
+C:\Users\97254\source\repos\chess-game--c-sharp\GameBoard\obj\Debug\ChessLogic.Form1.resources
+C:\Users\97254\source\repos\chess-game--c-sharp\GameBoard\obj\Debug\GameBoard.Properties.Resources.resources
+C:\Users\97254\source\repos\chess-game--c-sharp\GameBoard\obj\Debug\UI.csproj.GenerateResource.cache
+C:\Users\97254\source\repos\chess-game--c-sharp\GameBoard\obj\Debug\UI.csproj.CoreCompileInputs.cache
+C:\Users\97254\source\repos\chess-game--c-sharp\GameBoard\obj\Debug\GameBoard.exe
+C:\Users\97254\source\repos\chess-game--c-sharp\GameBoard\obj\Debug\GameBoard.pdb

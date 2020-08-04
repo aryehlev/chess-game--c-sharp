@@ -1,19 +1,19 @@
 ﻿using System.Drawing;
 
-namespace GameBoard
+namespace ChessLogic
 {
-    abstract class Peice
+    abstract class ChessPeice
     {
         private Point m_LocationOnBoard;
         private readonly bool r_IsWhite;
 
-        protected Peice(Point i_LocationOnBoard, bool i_IsWhite)
+        protected ChessPeice(Point i_LocationOnBoard, bool i_IsWhite)
         {
             m_LocationOnBoard = i_LocationOnBoard;
             r_IsWhite = i_IsWhite;
         }
 
-        public bool IsLegalPeiceMove(Point i_NewPoint)
+        public virtual bool IsLegalPeiceMove(Point i_NewPoint)
         {
             return  i_NewPoint.X >= 0 && i_NewPoint.X <= 7 && i_NewPoint.Y >= 0 && i_NewPoint.Y <= 7;
         }

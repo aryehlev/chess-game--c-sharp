@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameBoard", "GameBoard\GameBoard.csproj", "{403F4C56-6643-4E33-AF6C-25F5017B4615}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI", "GameBoard\UI.csproj", "{403F4C56-6643-4E33-AF6C-25F5017B4615}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessLogic", "ChessLogic\ChessLogic.csproj", "{A0905467-073B-432B-8653-51A0501E68A0}"
 EndProject

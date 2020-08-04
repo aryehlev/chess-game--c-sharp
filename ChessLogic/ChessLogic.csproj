@@ -41,7 +41,7 @@
     <Compile Include="King.cs" />
     <Compile Include="Knight.cs" />
     <Compile Include="Pawn.cs" />
-    <Compile Include="Peice.cs" />
+    <Compile Include="ChessPeice.cs" />
     <Compile Include="Queen.cs" />
     <Compile Include="Rook.cs" />
   </ItemGroup>
